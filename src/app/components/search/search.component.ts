@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { delay, finalize, fromEvent, of, tap } from 'rxjs';
+import { catchError, delay, finalize, fromEvent, of, tap } from 'rxjs';
 import { debounceTime, map, filter, switchMap } from 'rxjs';
 
 @Component({
@@ -12,6 +12,7 @@ import { debounceTime, map, filter, switchMap } from 'rxjs';
 export class SearchComponent {
   searchResults: string[] = [];
   loading: boolean = false;
+  error: string | null = null;
 
   ngOnInit() {
     const searchInput = document.getElementById('search') as HTMLInputElement;
@@ -21,10 +22,17 @@ export class SearchComponent {
         map((event: Event) => (event.target as HTMLInputElement).value),
         debounceTime(300),
         filter((value: string) => value.length > 2),
-        tap(() => (this.loading = true)),
+        tap(() => {
+          this.loading = true;
+          this.error = null;
+        }),
         switchMap((term: string) =>
           of(this.fakeApiCall(term)).pipe(
             delay(500),
+            catchError((err) => {
+              this.error = 'Failed to fetch search results.';
+              return of([]);
+            }),
             finalize(() => (this.loading = false))
           )
         )
@@ -35,6 +43,9 @@ export class SearchComponent {
   }
 
   fakeApiCall(term: string): string[] {
+    if (Math.random() < 0.3) {
+      throw new Error('Failed to fetch search results.');
+    }
     return [
       `Result for "${term}" 1`,
       `Result for "${term}" 2`,

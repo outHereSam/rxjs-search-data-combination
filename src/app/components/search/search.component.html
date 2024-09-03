@@ -3,6 +3,8 @@
 <div class="loading">
   <p>Loading...</p>
 </div>
+} @if(error) {
+<p class="error">Error: {{ error }}</p>
 } @if (!loading && searchResults.length) {
 <div class="results">
   @for(result of searchResults; track $index) {
