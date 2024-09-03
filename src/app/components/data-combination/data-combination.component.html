@@ -1,0 +1,20 @@
+@if(loadingUserDetails || loadingUserPosts) {
+<div>
+  @if (loadingUserDetails) {
+  <p>Loading user details...</p>
+  } @if(loadingUserPosts) {
+  <p>Loading user posts...</p>
+  }
+</div>
+} @if (!loadingUserDetails && !loadingUserPosts && combinedData) {
+<h2>User Details</h2>
+<p>Name: {{ combinedData.user.name }}</p>
+<p>Email: {{ combinedData.user.email }}</p>
+
+<h2>User Posts</h2>
+<ul>
+  @for(post of combinedData.posts; track $index) {
+  <li>{{ post }}</li>
+  }
+</ul>
+}
