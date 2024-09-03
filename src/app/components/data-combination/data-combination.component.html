@@ -6,6 +6,10 @@
   <p>Loading user posts...</p>
   }
 </div>
+} @if(error) {
+<div>
+  <p class="error">Error: {{ error }}</p>
+</div>
 } @if (!loadingUserDetails && !loadingUserPosts && combinedData) {
 <h2>User Details</h2>
 <p>Name: {{ combinedData.user.name }}</p>

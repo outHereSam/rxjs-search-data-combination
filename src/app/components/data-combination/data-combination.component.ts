@@ -1,5 +1,13 @@
 import { Component } from '@angular/core';
-import { combineLatest, delay, finalize, map, of } from 'rxjs';
+import {
+  catchError,
+  combineLatest,
+  delay,
+  finalize,
+  map,
+  of,
+  throwError,
+} from 'rxjs';
 
 @Component({
   selector: 'app-data-combination',
@@ -12,6 +20,7 @@ export class DataCombinationComponent {
   combinedData: { user: any; posts: string[] } | null = null;
   loadingUserDetails = true;
   loadingUserPosts = true;
+  error: string | null = null;
 
   ngOnInit() {
     // Simulating user details api endpoint
@@ -21,7 +30,11 @@ export class DataCombinationComponent {
       email: 'thomas@jensen.com',
     }).pipe(
       delay(1000),
-      finalize(() => (this.loadingUserDetails = false))
+      finalize(() => (this.loadingUserDetails = false)),
+      catchError((err) => {
+        this.error = 'Failed to fetch user details.';
+        return throwError(() => err);
+      })
     );
 
     // Simulating user posts api endpoint
@@ -31,7 +44,11 @@ export class DataCombinationComponent {
       "Post 3: What's the point of combineLatest?",
     ]).pipe(
       delay(1500),
-      finalize(() => (this.loadingUserPosts = false))
+      finalize(() => (this.loadingUserPosts = false)),
+      catchError((err) => {
+        this.error = 'Failed to fetch user posts.';
+        return throwError(() => err);
+      })
     );
 
     // Combine the latest emissions from both observables
