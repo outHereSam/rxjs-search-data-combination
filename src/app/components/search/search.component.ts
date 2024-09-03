@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { delay, fromEvent, of } from 'rxjs';
+import { delay, finalize, fromEvent, of, tap } from 'rxjs';
 import { debounceTime, map, filter, switchMap } from 'rxjs';
 
 @Component({
@@ -11,6 +11,7 @@ import { debounceTime, map, filter, switchMap } from 'rxjs';
 })
 export class SearchComponent {
   searchResults: string[] = [];
+  loading: boolean = false;
 
   ngOnInit() {
     const searchInput = document.getElementById('search') as HTMLInputElement;
@@ -20,7 +21,13 @@ export class SearchComponent {
         map((event: Event) => (event.target as HTMLInputElement).value),
         debounceTime(300),
         filter((value: string) => value.length > 2),
-        switchMap((term: string) => of(this.fakeApiCall(term)).pipe(delay(500)))
+        tap(() => (this.loading = true)),
+        switchMap((term: string) =>
+          of(this.fakeApiCall(term)).pipe(
+            delay(500),
+            finalize(() => (this.loading = false))
+          )
+        )
       )
       .subscribe((results: string[]) => {
         this.searchResults = results;

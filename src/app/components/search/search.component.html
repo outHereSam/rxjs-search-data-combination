@@ -1,7 +1,14 @@
 <input type="text" id="search" placeholder="Search..." />
-
+@if(loading) {
+<div class="loading">
+  <p>Loading...</p>
+</div>
+} @if (!loading && searchResults.length) {
 <div class="results">
   @for(result of searchResults; track $index) {
   <p>{{ result }}</p>
   }
 </div>
+} @if (!loading && !searchResults.length) {
+<p>No results found</p>
+}
