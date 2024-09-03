@@ -25,26 +25,34 @@ export class SearchComponent {
         tap(() => {
           this.loading = true;
           this.error = null;
+          this.searchResults = [];
         }),
         switchMap((term: string) =>
           of(this.fakeApiCall(term)).pipe(
             delay(500),
             catchError((err) => {
               this.error = 'Failed to fetch search results.';
+              this.loading = false;
               return of([]);
             }),
             finalize(() => (this.loading = false))
           )
         )
       )
-      .subscribe((results: string[]) => {
-        this.searchResults = results;
+      .subscribe({
+        next: (results: string[]) => {
+          this.searchResults = results;
+          this.loading = false;
+        },
+        error: () => {
+          this.loading = false;
+        },
       });
   }
 
   fakeApiCall(term: string): string[] {
     if (Math.random() < 0.3) {
-      throw new Error('Failed to fetch search results.');
+      throw new Error('Random API error');
     }
     return [
       `Result for "${term}" 1`,

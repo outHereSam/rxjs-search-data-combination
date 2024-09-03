@@ -5,12 +5,12 @@
 </div>
 } @if(error) {
 <p class="error">Error: {{ error }}</p>
-} @if (!loading && searchResults.length) {
+} @if (!loading && !error && searchResults.length) {
 <div class="results">
   @for(result of searchResults; track $index) {
   <p>{{ result }}</p>
   }
 </div>
-} @if (!loading && !searchResults.length) {
+} @if (!loading && !error && !searchResults.length) {
 <p>No results found</p>
 }
