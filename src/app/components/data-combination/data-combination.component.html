@@ -1,24 +1,32 @@
-@if(loadingUserDetails || loadingUserPosts) {
-<div>
-  @if (loadingUserDetails) {
-  <p>Loading user details...</p>
-  } @if(loadingUserPosts) {
-  <p>Loading user posts...</p>
-  }
-</div>
-} @if(error) {
-<div>
-  <p class="error">Error: {{ error }}</p>
-</div>
-} @if (!loadingUserDetails && !loadingUserPosts && combinedData) {
-<h2>User Details</h2>
-<p>Name: {{ combinedData.user.name }}</p>
-<p>Email: {{ combinedData.user.email }}</p>
+<div class="container">
+  <h1>Data Combination</h1>
 
-<h2>User Posts</h2>
-<ul>
-  @for(post of combinedData.posts; track $index) {
-  <li>{{ post }}</li>
+  @if(loadingUserDetails || loadingUserPosts) {
+  <div class="loading">
+    @if (loadingUserDetails) {
+    <p>Loading user details...</p>
+    } @if(loadingUserPosts) {
+    <p>Loading user posts...</p>
+    }
+  </div>
+  } @if(error) {
+  <div>
+    <p class="error">Error: {{ error }}</p>
+  </div>
+  } @if (!loadingUserDetails && !loadingUserPosts && combinedData) {
+  <div class="user-details">
+    <h4>User Details</h4>
+    <p>Name: {{ combinedData.user.name }}</p>
+    <p>Email: {{ combinedData.user.email }}</p>
+  </div>
+
+  <div class="user-posts">
+    <h4>User Posts</h4>
+    <ul>
+      @for(post of combinedData.posts; track $index) {
+      <li>{{ post }}</li>
+      }
+    </ul>
+  </div>
   }
-</ul>
-}
+</div>

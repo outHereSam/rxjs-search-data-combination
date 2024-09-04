@@ -31,6 +31,11 @@ export class SearchComponent {
       .pipe(
         map((event: Event) => (event.target as HTMLInputElement).value),
         debounceTime(300),
+        tap(
+          () =>
+            (this.error =
+              'You must enter a search term of length greater than 2 characters.')
+        ),
         filter((value: string) => value.length > 2),
         tap(() => {
           this.loading = true;

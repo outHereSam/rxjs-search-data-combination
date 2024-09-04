@@ -63,3 +63,7 @@ h1 {
 .results p {
   margin: 0 0 10px 0;
 }
+
+.hint {
+  color: rgb(94, 94, 94);
+}
