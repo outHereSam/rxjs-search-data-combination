@@ -1,5 +1,15 @@
 import { Component } from '@angular/core';
-import { catchError, delay, finalize, fromEvent, of, tap } from 'rxjs';
+import {
+  catchError,
+  delay,
+  finalize,
+  fromEvent,
+  mergeMap,
+  Observable,
+  of,
+  tap,
+  throwError,
+} from 'rxjs';
 import { debounceTime, map, filter, switchMap } from 'rxjs';
 
 @Component({
@@ -25,10 +35,9 @@ export class SearchComponent {
         tap(() => {
           this.loading = true;
           this.error = null;
-          this.searchResults = [];
         }),
         switchMap((term: string) =>
-          of(this.fakeApiCall(term)).pipe(
+          this.fakeApiCall(term).pipe(
             delay(500),
             catchError((err) => {
               this.error = 'Failed to fetch search results.';
@@ -39,25 +48,25 @@ export class SearchComponent {
           )
         )
       )
-      .subscribe({
-        next: (results: string[]) => {
-          this.searchResults = results;
-          this.loading = false;
-        },
-        error: () => {
-          this.loading = false;
-        },
+      .subscribe((results: string[]) => {
+        this.searchResults = results;
+        this.loading = false;
       });
   }
 
-  fakeApiCall(term: string): string[] {
-    if (Math.random() < 0.3) {
-      throw new Error('Random API error');
-    }
-    return [
+  fakeApiCall(term: string): Observable<string[]> {
+    return of([
       `Result for "${term}" 1`,
       `Result for "${term}" 2`,
       `Result for "${term}" 3`,
-    ];
+    ]).pipe(
+      delay(500),
+      mergeMap((results) => {
+        if (Math.random() < 0.3) {
+          return throwError(() => new Error('Failed to fetch search results'));
+        }
+        return of(results);
+      })
+    );
   }
 }
